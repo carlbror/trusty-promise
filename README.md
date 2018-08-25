@@ -1,2 +1,2 @@
 # trusty-promise
-Ethereum contract for making signatures handcuffs of code
+Ethereum contract for making signatures into handcuffs of code
