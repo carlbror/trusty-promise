@@ -51,7 +51,6 @@ contract promise {
 
     function addFoul(uint _number){
         require(active);
-        require(!sentMoney);
         require(msg.sender == judges[_number]);
         require(voted[_number] != 1);
 
@@ -65,7 +64,6 @@ contract promise {
 
     function addWrongCondition(uint _number){
         require(active);
-        require(!sentMoney);
         require(msg.sender == judges[_number]);
         require(promiseConditionNotMet[_number] != 1);
 
@@ -79,7 +77,6 @@ contract promise {
 
     function sendMoneyToPromisor(){
         require(active);
-        require(!sentMoney);
         require(now >= endDate);
 
         promisorAccount.send(deposit);
@@ -91,7 +88,6 @@ contract promise {
     }
 
     function selfDestruct(){
-        require(active);
         require(sentMoney);
         require(now >= (endDate+432000));
 
