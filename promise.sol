@@ -1,7 +1,6 @@
 pragma solidity ^0.4.19;
 contract promise {
     string public promisor;
-    string public promisorTwitterAccount;
     string public vow;
     uint public promiseDate;
     uint public endDate;
@@ -21,9 +20,8 @@ contract promise {
     uint[3] public promiseConditionNotMet;
     uint public wrongConditions = 0;
 
-    function promise(string _promisor, string _promisorTwitterAccount, string _vow, address _promisorAccount, address _opponentAccount, address[3] _judges, uint256 _deposit, uint _endDate) public{
+    function promise(string _promisor, string _vow, address _promisorAccount, address _opponentAccount, address[3] _judges, uint256 _deposit, uint _endDate) public{
         promisor = _promisor;
-        promisorTwitterAccount = _promisorTwitterAccount;
         vow = _vow;
         promisorAccount = _promisorAccount;
         opponentAccount = _opponentAccount;
@@ -53,6 +51,7 @@ contract promise {
         require(active);
         require(msg.sender == judges[_number]);
         require(voted[_number] != 1);
+        require(promiseConditionNotMet[_number] != 1);
 
         fouls = fouls + 1;
         voted[_number] = 1;
@@ -66,6 +65,7 @@ contract promise {
         require(active);
         require(msg.sender == judges[_number]);
         require(promiseConditionNotMet[_number] != 1);
+        require(voted[_number] != 1);
 
         wrongConditions = wrongConditions + 1;
         promiseConditionNotMet[_number] = 1;
