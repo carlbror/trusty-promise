@@ -1,96 +1,100 @@
 pragma solidity ^0.4.19;
-contract promise {
-    string public promisor;
+contract promise{
     string public vow;
-    uint public promiseDate;
-    uint public endDate;
-
-    bool public active;
-    uint[3] public judgeSigning;
-
+    address public promisor;
+    address public beneficiary;
     uint256 public deposit;
-    address public promisorAccount;
-    address public opponentAccount; //or destroy them
+    uint public endDate;
+    address[3] public judges;
+
+    uint[3] public signedByJudge;
+    bool public signedByPromisor;
+
+    uint[3] public votedFoul;
+    uint public foulVotes = 0;
+    uint[3] public votedShy;
+    uint public shyVotes = 0;
+    uint[3] public votedSuccess;
+    uint public successVotes = 0;
+
     bool public sentMoney = false;
 
-    address[3] public judges;
-    uint[3] public voted;
-    uint public fouls = 0;
-
-    uint[3] public promiseConditionNotMet;
-    uint public wrongConditions = 0;
-
-    function promise(string _promisor, string _vow, address _promisorAccount, address _opponentAccount, address[3] _judges, uint256 _deposit, uint _endDate) public{
+    constructor(address _promisor, string _vow, uint256 _deposit, uint _endDate, address[3] _judges, address _beneficiary) public{
         promisor = _promisor;
         vow = _vow;
-        promisorAccount = _promisorAccount;
-        opponentAccount = _opponentAccount;
-        judges = _judges;
         deposit = _deposit;
-        promiseDate = now;
         endDate = _endDate;
+        judges = _judges;
+        beneficiary = _beneficiary;
     }
 
-    function signingContractJudges(uint _number){
-        require(msg.sender == judges[_number]);
-        judgeSigning[_number] = 1;
-    }
-
-    function signingPromisor() payable public{
-        require(msg.sender == promisorAccount);
-        require(judgeSigning[0] == 1);
-        require(judgeSigning[1] == 1);
-        require(judgeSigning[2] == 1);
-        require(!active);
-        require(msg.value == deposit);
-
-        active = true;
-    }
-
-    function addFoul(uint _number){
-        require(active);
-        require(msg.sender == judges[_number]);
-        require(voted[_number] != 1);
-        require(promiseConditionNotMet[_number] != 1);
-
-        fouls = fouls + 1;
-        voted[_number] = 1;
-        if(fouls >= 2){
-          opponentAccount.send(deposit);
-          sentMoney = true;
-        }
-    }
-
-    function addWrongCondition(uint _number){
-        require(active);
-        require(msg.sender == judges[_number]);
-        require(promiseConditionNotMet[_number] != 1);
-        require(voted[_number] != 1);
-
-        wrongConditions = wrongConditions + 1;
-        promiseConditionNotMet[_number] = 1;
-        if(wrongConditions >= 2){
-          promisorAccount.send(deposit);
-          sentMoney = true;
-        }
-    }
-
-    function sendMoneyToPromisor(){
-        require(active);
-        require(now >= endDate);
-
-        promisorAccount.send(deposit);
-        sentMoney = true;
-    }
-
-    function getBalance() constant returns (uint) {
+    function getBalance() constant returns(uint){
       return this.balance;
     }
 
-    function selfDestruct(){
-        require(sentMoney);
-        require(now >= (endDate+432000));
+    function judgeSigns(uint _number){
+        require(msg.sender == judges[_number]);
+        signedByJudge[_number] = 1;
+    }
 
-        selfdestruct(msg.sender);
+    function promisorSigns() payable public{
+        require(msg.sender == promisor);
+        require(signedByJudge[0] == 1);
+        require(signedByJudge[1] == 1);
+        require(signedByJudge[2] == 1);
+        require(!signedByPromisor);
+        require(msg.value == deposit);
+
+        signedByPromisor = true;
+    }
+
+    function voteFoul(uint _number){
+        require(signedByPromisor);
+        require(msg.sender == judges[_number]);
+        require(votedFoul[_number] != 1);
+        require(votedShy[_number] != 1);
+        require(votedSuccess[_number] != 1);
+
+        foulVotes = foulVotes + 1;
+        votedFoul[_number] = 1;
+        if(foulVotes >= 2){
+          beneficiary.send(deposit);
+          sentMoney = true;
+        }
+    }
+
+    function voteShyOfCondition(uint _number){
+        require(signedByPromisor);
+        require(msg.sender == judges[_number]);
+        require(votedShy[_number] != 1);
+        require(votedFoul[_number] != 1);
+
+        shyVotes = shyVotes + 1;
+        votedShy[_number] = 1;
+        if(shyVotes >= 2){
+          promisor.send(deposit);
+          sentMoney = true;
+        }
+    }
+
+    function voteSuccess(uint _number){
+        require(signedByPromisor);
+        require(msg.sender == judges[_number]);
+        require(votedSuccess[_number] != 1);
+        require(votedFoul[_number] != 1);
+
+        successVotes = successVotes + 1;
+        votedSuccess[_number] = 1;
+        if(successVotes >= 2){
+          promisor.send(deposit);
+          sentMoney = true;
+        }
+    }
+
+    function selfDestruct(){
+      require(sentMoney);
+      require(now >= (endDate+432000));
+
+      selfdestruct(msg.sender);
     }
 }
