@@ -1,5 +1,5 @@
-pragma solidity ^0.4.19;
-contract promise{
+pragma solidity ^0.4.25;
+contract Promise{
     string public vow;
     address public promisor;
     address public beneficiary;
@@ -28,11 +28,7 @@ contract promise{
         beneficiary = _beneficiary;
     }
 
-    function getBalance() constant returns(uint){
-      return this.balance;
-    }
-
-    function judgeSigns(uint _number){
+    function judgeSigns(uint _number) public{
         require(msg.sender == judges[_number]);
         signedByJudge[_number] = 1;
     }
@@ -48,7 +44,7 @@ contract promise{
         signedByPromisor = true;
     }
 
-    function voteFoul(uint _number){
+    function voteFoul(uint _number) public{
         require(signedByPromisor);
         require(msg.sender == judges[_number]);
         require(votedFoul[_number] != 1);
@@ -57,13 +53,13 @@ contract promise{
 
         foulVotes = foulVotes + 1;
         votedFoul[_number] = 1;
-        if(foulVotes >= 2){
+        if((foulVotes >= 2) && !sentMoney){
           beneficiary.send(deposit);
           sentMoney = true;
         }
     }
 
-    function voteShyOfCondition(uint _number){
+    function voteShyOfCondition(uint _number) public{
         require(signedByPromisor);
         require(msg.sender == judges[_number]);
         require(votedShy[_number] != 1);
@@ -71,13 +67,13 @@ contract promise{
 
         shyVotes = shyVotes + 1;
         votedShy[_number] = 1;
-        if(shyVotes >= 2){
+        if((shyVotes >= 2) && !sentMoney){
           promisor.send(deposit);
           sentMoney = true;
         }
     }
 
-    function voteSuccess(uint _number){
+    function voteSuccess(uint _number) public{
         require(signedByPromisor);
         require(msg.sender == judges[_number]);
         require(votedSuccess[_number] != 1);
@@ -85,13 +81,13 @@ contract promise{
 
         successVotes = successVotes + 1;
         votedSuccess[_number] = 1;
-        if(successVotes >= 2){
+        if((successVotes >= 2) && !sentMoney){
           promisor.send(deposit);
           sentMoney = true;
         }
     }
 
-    function selfDestruct(){
+    function selfDestruct() public{
       require(sentMoney);
       require(now >= (endDate+432000));
 
