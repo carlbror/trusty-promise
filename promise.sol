@@ -4,7 +4,7 @@ contract Promise{
     string public vow;
     address public promisor;
     address public beneficiary;
-    uint256 public deposit;
+    uint public deposit;
     uint public endDate;
     address[3] public judges;
 
@@ -20,7 +20,7 @@ contract Promise{
 
     bool public sentMoney = false;
 
-    constructor(address _promisor, string _vow, uint256 _deposit, uint _endDate, address[3] _judges, address _beneficiary) public{
+    constructor(address _promisor, string _vow, uint _deposit, uint _endDate, address[3] _judges, address _beneficiary) public{
         promisor = _promisor;
         vow = _vow;
         deposit = _deposit;
