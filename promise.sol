@@ -55,7 +55,7 @@ contract Promise{
         foulVotes = foulVotes + 1;
         votedFoul[_number] = 1;
         if((foulVotes >= 2) && !sentMoney){
-          beneficiary.send(deposit);
+          beneficiary.transfer(deposit);
           sentMoney = true;
         }
     }
@@ -69,7 +69,7 @@ contract Promise{
         shyVotes = shyVotes + 1;
         votedShy[_number] = 1;
         if((shyVotes >= 2) && !sentMoney){
-          promisor.send(deposit);
+          promisor.transfer(deposit);
           sentMoney = true;
         }
     }
@@ -83,7 +83,7 @@ contract Promise{
         successVotes = successVotes + 1;
         votedSuccess[_number] = 1;
         if((successVotes >= 2) && !sentMoney){
-          promisor.send(deposit);
+          promisor.transfer(deposit);
           sentMoney = true;
         }
     }
