@@ -1,9 +1,10 @@
-pragma solidity ^0.4.25;
+pragma solidity ^0.5.5;
 
 contract Promise{
+    function() external payable{}
     string public vow;
-    address public promisor;
-    address public beneficiary;
+    address payable public promisor;
+    address payable public beneficiary;
     uint public deposit;
     uint public endDate;
     address[3] public judges;
@@ -20,7 +21,7 @@ contract Promise{
 
     bool public sentMoney = false;
 
-    constructor(address _promisor, string _vow, uint _deposit, uint _endDate, address[3] _judges, address _beneficiary) public{
+    constructor(address payable _promisor, string memory _vow, uint _deposit, uint _endDate, address[3] memory _judges, address payable _beneficiary) public{
         promisor = _promisor;
         vow = _vow;
         deposit = _deposit;
@@ -55,7 +56,7 @@ contract Promise{
         foulVotes = foulVotes + 1;
         votedFoul[_number] = 1;
         if((foulVotes >= 2) && !sentMoney){
-          beneficiary.transfer(deposit);
+          beneficiary.transfer(address(this).balance);
           sentMoney = true;
         }
     }
@@ -69,7 +70,7 @@ contract Promise{
         shyVotes = shyVotes + 1;
         votedShy[_number] = 1;
         if((shyVotes >= 2) && !sentMoney){
-          promisor.transfer(deposit);
+          promisor.transfer(address(this).balance);
           sentMoney = true;
         }
     }
@@ -83,7 +84,7 @@ contract Promise{
         successVotes = successVotes + 1;
         votedSuccess[_number] = 1;
         if((successVotes >= 2) && !sentMoney){
-          promisor.transfer(deposit);
+          promisor.transfer(address(this).balance);
           sentMoney = true;
         }
     }
